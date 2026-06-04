@@ -3,7 +3,7 @@
 ## INCLUDE-I PE TOȚI! INFORMEAZĂ-I PE TOȚI! INVESTEȘTE IN TOȚI!
 
 **Proiect Erasmus+**
-Număr contract: **[PLACEHOLDER]**
+Număr contract: **2024-2-RO01-KA122-ADU-000279325**
 
 ---
 
