@@ -1,17 +1,17 @@
 # PROIECT ERASMUS +
 
-## MOTIVEAZĂ! DEZVOLTĂ! IMPLICĂ!
+## INCLUDE-I PE TOȚI! INFORMEAZĂ-I PE TOȚI! INVESTEȘTE IN TOȚI!
 
-**Proiect Erasmus+ „Motivează! Dezvoltă! Implică!”**  
+**Proiect Erasmus+**
 Număr contract: **[PLACEHOLDER]**
 
 ---
 
 ## Descriere proiect
 
-Proiectul Erasmus+ „Motivează! Dezvoltă! Implică!” se va derula pe o perioadă de **[PLACEHOLDER]**, între **[PLACEHOLDER]** și **[PLACEHOLDER]**.  
+Proiectul Erasmus+ „INCLUDE-I PE TOȚI! INFORMEAZĂ-I PE TOȚI! INVESTEȘTE IN TOȚI!” se va derula pe o perioadă de **18 luni**, între **01.04.2025** și **30.09.2026**.  
 
-Finanțarea va fi în sumă maximă de **[PLACEHOLDER] EURO**.
+Grantul aprobat este de **18.432 EURO**.
 
 ---
 
@@ -20,7 +20,7 @@ Finanțarea va fi în sumă maximă de **[PLACEHOLDER] EURO**.
 
 ---
 
-## Obiective
+## Scop
 
 - Dobândirea de metode și strategii de motivare și automotivare  
 - Reducerea diferențelor socio-profesionale între membrii asociației  
@@ -35,4 +35,5 @@ Candidații trebuie să îndeplinească următoarele condiții:
 - să dețină competențe lingvistice (limba engleză minim nivel A2)  
 - să își arate disponibilitatea de a disemina experiența obținută  
 - să prezinte în scrisoarea de intenție o idee personală privind îmbunătățirea activității asociației  
-- să aibă un nivel minim de competențe IT, demonstrat prin cursuri  
+- să fie formatori de adulți
+- să facă parte din categori dezavantajate
