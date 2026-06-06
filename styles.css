@@ -212,9 +212,8 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-heading);font-weight:700}
 .site-footer .container{display:flex;justify-content:space-between;color:var(--muted);font-size:0.95rem}
 .page-hero-image {display:flex;justify-content:center;}
 .page-hero-copy h1{font-family:var(--font-body);font-size:clamp(2rem,4vw,3.2rem);line-height:1.05;max-width:100%;}
-.page-hero-copy h1 .highlight-letter{color:var(--accent-2) !important;font-weight:900;display:inline;transform:scale(1.08);margin:0;padding:0;background:transparent;text-shadow:0 0 1px rgba(0,0,0,0.16);}
-.page-hero-copy h1 .highlight-letter:first-child{letter-spacing:0.06em;}
-
+.slogan::first-letter{color:var(--accent-2) !important;font-weight:900;display:inline;transform:scale(1.08);margin:0;padding:0;background:transparent;text-shadow:0 0 1px rgba(0,0,0,0.16);}
+[x]{margin-bottom:0 !important;}
 @media (max-width:900px){
   .page-hero-copy h1{font-size:clamp(1.8rem,4.2vw,2.4rem);}
 }
