@@ -1,4 +1,4 @@
-// Small client script: smooth scrolling for anchor links
+// Small client script: smooth scrolling for anchor links and section navigation
 document.addEventListener('click', function(e){
   const a = e.target.closest('a');
   if(!a) return;
@@ -8,7 +8,12 @@ document.addEventListener('click', function(e){
     const target = document.getElementById(id);
     if(target){
       e.preventDefault();
-      target.scrollIntoView({behavior:'smooth'});
+      showSection(id);
+      if (a.closest('.menu-dropdown')) {
+        menuDropdown.classList.remove('show');
+        menuBtn.setAttribute('aria-expanded','false');
+        menuBtn.classList.remove('open');
+      }
     }
   }
 });
