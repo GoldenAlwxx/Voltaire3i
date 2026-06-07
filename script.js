@@ -1,17 +1,37 @@
-// Small client script: smooth scrolling for anchor links and section navigation
-document.addEventListener('click', function(e){
+// ── Toast ────────────────────────────────────────────────────
+const toast = document.createElement('div');
+toast.className = 'toast';
+toast.innerHTML = '<span class="toast-spinner"></span><span class="toast-msg"></span>';
+document.body.appendChild(toast);
+let toastTimer = null;
+
+function showToast(msg, duration = 2800) {
+  toast.querySelector('.toast-msg').textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), duration);
+}
+
+// ── Anchor clicks + download toast ───────────────────────────
+document.addEventListener('click', function(e) {
   const a = e.target.closest('a');
-  if(!a) return;
-  const href = a.getAttribute('href')||'';
-  if(href.startsWith('#')){
+  if (!a) return;
+  const href = a.getAttribute('href') || '';
+
+  // Download toast
+  if (a.hasAttribute('download') && href) {
+    showToast('Se descarcă...');
+  }
+
+  if (href.startsWith('#')) {
     const id = href.slice(1);
     const target = document.getElementById(id);
-    if(target){
+    if (target) {
       e.preventDefault();
       showSection(id);
       if (a.closest('.menu-dropdown')) {
         menuDropdown.classList.remove('show');
-        menuBtn.setAttribute('aria-expanded','false');
+        menuBtn.setAttribute('aria-expanded', 'false');
         menuBtn.classList.remove('open');
       }
     }
@@ -141,16 +161,34 @@ function removeSkeleton(section, overlay) {
   section.classList.remove('section-content-hidden');
 }
 
-function showSection(id) {
+function showSection(id, anchor) {
   if (transitioning) return;
 
   const sections = document.querySelectorAll('main .section, main .hero');
   const incoming = document.getElementById(id);
   const outgoing = Array.from(sections).find(s => !s.classList.contains('hidden'));
 
-  if (!incoming || incoming === outgoing) return;
+  const scrollToAnchor = () => {
+    const target = (anchor && document.getElementById(anchor)) || incoming;
+    if (!target) return;
+    const headerHeight = document.querySelector('.site-header')?.offsetHeight || 0;
+    const top = target.getBoundingClientRect().top + window.scrollY - headerHeight - 16;
+    window.scrollTo({ top, behavior: 'smooth' });
+  };
 
-  // No outgoing section — just show directly
+  // Update active menu link
+  document.querySelectorAll('#menuDropdown a[data-target]').forEach(a => {
+    a.classList.toggle('active', a.getAttribute('data-target') === id);
+  });
+
+  // Push to browser history
+  history.pushState({ section: id, anchor: anchor || '' }, '', `#${id}`);
+
+  if (!incoming || incoming === outgoing) {
+    scrollToAnchor();
+    return;
+  }
+
   if (!outgoing) {
     incoming.classList.remove('hidden');
     incoming.classList.add('section-enter');
@@ -165,23 +203,19 @@ function showSection(id) {
 
   transitioning = true;
 
-  // Step 1 — fade out outgoing
   outgoing.classList.add('section-exit');
   requestAnimationFrame(() => {
     requestAnimationFrame(() => outgoing.classList.add('section-exit-active'));
   });
 
-  // Use setTimeout instead of transitionend — more reliable
   setTimeout(() => {
     outgoing.classList.add('hidden');
     outgoing.classList.remove('section-exit', 'section-exit-active');
 
-    // Step 2 — show skeleton, scroll into view
     incoming.classList.remove('hidden');
     const skeleton = buildSkeleton(incoming);
     incoming.scrollIntoView({ behavior: 'smooth' });
 
-    // Step 3 — hold skeleton, then swap in real content
     setTimeout(() => {
       removeSkeleton(incoming, skeleton);
       incoming.classList.add('section-enter');
@@ -190,20 +224,62 @@ function showSection(id) {
       });
       setTimeout(() => {
         incoming.classList.remove('section-enter', 'section-enter-active');
+        scrollToAnchor();
         transitioning = false;
       }, 400);
     }, 900);
+  }, 300);
+}
 
-  }, 300); // matches exit transition duration
+// ── Back/forward navigation ───────────────────────────────────
+window.addEventListener('popstate', function(e) {
+  const id = (e.state?.section) || location.hash.slice(1) || 'despre';
+  const anchor = e.state?.anchor || '';
+  showSection(id, anchor);
+});
+
+// ── Auto-generate anchor IDs from headings ───────────────────
+function buildAnchorMap() {
+  document.querySelectorAll('main h1, main h2, main h3').forEach(el => {
+    if (!el.id) {
+      el.id = 'anchor-' + el.textContent.trim()
+        .toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
+    }
+  });
 }
 
 // Ensure landing shows only `despre` on load
-document.addEventListener('DOMContentLoaded', function(){
+document.addEventListener('DOMContentLoaded', function() {
+  buildAnchorMap();
+
   const sections = document.querySelectorAll('main .section, main .hero');
+  const hashId = location.hash.slice(1);
+  const startId = (hashId && document.getElementById(hashId)) ? hashId : 'despre';
+
   sections.forEach(s => {
-    if (s.id !== 'despre') s.classList.add('hidden');
+    if (s.id !== startId) s.classList.add('hidden');
     else s.classList.remove('hidden');
   });
+
+  // Set initial active menu item
+  document.querySelectorAll('#menuDropdown a[data-target]').forEach(a => {
+    a.classList.toggle('active', a.getAttribute('data-target') === startId);
+  });
+
+  // Push initial state
+  history.replaceState({ section: startId, anchor: '' }, '', `#${startId}`);
+
+  renderResults('');
+
+  // Restore session search query
+  const saved = sessionStorage.getItem('searchQuery');
+  if (saved) {
+    searchInput.value = saved;
+    renderResults(saved);
+  }
 });
 
 // ── Slogan Typewriter Animation ─────────────────────────────
@@ -323,14 +399,14 @@ const searchIndex = [
   { title:"Perioada Proiectului", description:"01.04.2025 - 30.09.2026", keywords:"perioada durata calendar inceput sfarsit 2025 2026", action:{ type:"section", label:"Vezi Proiect", target:"despre" } },
   { title:"Grant Erasmus+", description:"18.432 EURO finanțare aprobată", keywords:"grant buget finantare euro bani 18432 cost proiect", action:{ type:"section", label:"Vezi Proiect", target:"despre" } },
   // ── SCOP & OBIECTIVE ─────────────────────────
-  { title:"Scopul Proiectului", description:"Metode de motivare și automotivare", keywords:"scop obiective motivare automotivare dezvoltare educatie", action:{ type:"section", label:"Vezi Scop", target:"despre" } },
-  { title:"Reducerea Diferențelor Sociale", description:"Diminuarea decalajelor socio-profesionale", keywords:"diferente sociale profesionale incluziune echitate", action:{ type:"section", label:"Vezi Scop", target:"despre" } },
+  { title:"Scopul Proiectului", description:"Metode de motivare și automotivare", keywords:"scop obiective motivare automotivare dezvoltare educatie", action:{ type:"section", label:"Vezi Scop", target:"despre", anchor:"anchor-scop" } },
+  { title:"Reducerea Diferențelor Sociale", description:"Diminuarea decalajelor socio-profesionale", keywords:"diferente sociale profesionale incluziune echitate", action:{ type:"section", label:"Vezi Scop", target:"despre", anchor:"anchor-scop" } },
   // ── CRITERII ─────────────────────────────────
-  { title:"Criterii de Selecție", description:"Condiții generale de participare", keywords:"criterii selectie conditii participare membri", action:{ type:"section", label:"Vezi Criterii", target:"despre" } },
-  { title:"Nivel Engleză A2", description:"Competență lingvistică minimă", keywords:"engleza a2 limba engleza nivel limba", action:{ type:"section", label:"Vezi Criterii", target:"despre" } },
-  { title:"Membri Activi ai Asociației", description:"Doar membri activi pot participa", keywords:"membri activi asociatie participare eligibil", action:{ type:"section", label:"Vezi Criterii", target:"despre" } },
-  { title:"Formatori de Adulți", description:"Cadre implicate în educația adulților", keywords:"formatori adulti trainer educatie adulti", action:{ type:"section", label:"Vezi Criterii", target:"despre" } },
-  { title:"Categorii Dezavantajate", description:"Incluziune socială și acces egal", keywords:"dezavantajate incluziune social grup vulnerabil", action:{ type:"section", label:"Vezi Criterii", target:"despre" } },
+  { title:"Criterii de Selecție", description:"Condiții generale de participare", keywords:"criterii selectie conditii participare membri", action:{ type:"section", label:"Vezi Criterii", target:"despre", anchor:"anchor-criterii-de-selectie" } },
+  { title:"Nivel Engleză A2", description:"Competență lingvistică minimă", keywords:"engleza a2 limba engleza nivel limba", action:{ type:"section", label:"Vezi Criterii", target:"despre", anchor:"anchor-criterii-de-selectie" } },
+  { title:"Membri Activi ai Asociației", description:"Doar membri activi pot participa", keywords:"membri activi asociatie participare eligibil", action:{ type:"section", label:"Vezi Criterii", target:"despre", anchor:"anchor-criterii-de-selectie" } },
+  { title:"Formatori de Adulți", description:"Cadre implicate în educația adulților", keywords:"formatori adulti trainer educatie adulti", action:{ type:"section", label:"Vezi Criterii", target:"despre", anchor:"anchor-criterii-de-selectie" } },
+  { title:"Categorii Dezavantajate", description:"Incluziune socială și acces egal", keywords:"dezavantajate incluziune social grup vulnerabil", action:{ type:"section", label:"Vezi Criterii", target:"despre", anchor:"anchor-criterii-de-selectie" } },
   // ── MOBILITĂȚI ───────────────────────────────
   { title:"Mobilitate Job Shadowing", description:"Bune practici în educația adulților", keywords:"job shadowing mobilitate observare educatie adulti", action:{ type:"download", label:"Descarcă PDF", href:"mobilities/Mobilitate-Job-Shadowing.pdf" } },
   { title:"Mobilitate Portugalia", description:"Antreprenoriat social și comunitate", keywords:"portugalia mobilitate antreprenoriat social comunitate curs", action:{ type:"download", label:"Descarcă PDF", href:"mobilities/Mobilitate-Curs-Portugalia.pdf" } },
@@ -338,7 +414,7 @@ const searchIndex = [
   { title:"Vizită Pregătitoare", description:"Activitate pregătitoare proiect", keywords:"vizita pregatitoare mobilitate pregatire", action:null },
   // ── ASOCIAȚIE ────────────────────────────────
   { title:"Asociația Voltaire", description:"Părinți și profesori Voltaire", keywords:"asociatie voltaire liceu parinti profesori 2017", action:{ type:"section", label:"Vezi Asociația", target:"asociatia" } },
-  { title:"Cine Suntem", description:"Istoric și structură", keywords:"cine suntem istoric organizare membri", action:{ type:"section", label:"Vezi Asociația", target:"asociatia" } },
+  { title:"Cine Suntem", description:"Istoric și structură", keywords:"cine suntem istoric organizare membri", action:{ type:"section", label:"Vezi Asociația", target:"asociatia", anchor:"anchor-cine-suntem" } },
   { title:"Parteneriate", description:"Colaborări instituționale", keywords:"parteneriate colaborare minister inspectorat scoli", action:{ type:"section", label:"Vezi Asociația", target:"asociatia" } },
   { title:"Competențe Cheie UE", description:"Dezvoltare conform UE", keywords:"competente cheie ue european dezvoltare invatare", action:{ type:"section", label:"Vezi Asociația", target:"asociatia" } },
   // ── DOCUMENTE ────────────────────────────────
@@ -387,33 +463,62 @@ function buildResultHTML(item) {
     ${item.action
       ? item.action.type === 'download'
         ? `<a class="btn search-result-btn" href="${item.action.href}" download>${item.action.label}</a>`
-        : `<button class="btn search-result-btn" data-section="${item.action.target}">${item.action.label}</button>`
+        : `<button class="btn search-result-btn" data-section="${item.action.target}" data-anchor="${item.action.anchor || ''}">${item.action.label}</button>`
       : `<span class="btn btn-muted search-result-btn" style="opacity:0.5;cursor:default">În curând</span>`
     }
   </div>`;
 }
 
+function updateSearchShadow() {
+  const shadow = document.querySelector('.search-panel-shadow');
+  if (!shadow) return;
+  const atBottom = resultsBox.scrollHeight - resultsBox.scrollTop - resultsBox.clientHeight < 2;
+  const overflows = resultsBox.scrollHeight > resultsBox.clientHeight;
+  shadow.style.opacity = (overflows && !atBottom) ? '1' : '0';
+}
+
+resultsBox.addEventListener('scroll', updateSearchShadow);
+
 function renderResults(query) {
   const results = searchQuery(query);
-  if (!query.trim() && results.length === 0) {
-    resultsBox.classList.remove('show');
+
+  if (results.length === 0) {
+    resultsBox.innerHTML = query.trim()
+      ? `<p class="search-no-results">Niciun rezultat pentru „${query}"</p>`
+      : '';
+    resultsBox.classList.toggle('show', !!query.trim());
+    updateSearchShadow();
     return;
   }
-  if (results.length === 0) {
-    resultsBox.innerHTML = `<p class="search-no-results">Niciun rezultat pentru „${query}"</p>`;
-  } else {
-    resultsBox.innerHTML = results.map(buildResultHTML).join('');
-  }
+
+  resultsBox.innerHTML = results.map(buildResultHTML).join('');
   resultsBox.classList.add('show');
   resultsBox.querySelectorAll('button[data-section]').forEach(btn => {
     btn.addEventListener('click', () => {
-      showSection(btn.getAttribute('data-section'));
+      const anchor = btn.getAttribute('data-anchor');
+      showSection(btn.getAttribute('data-section'), anchor);
       searchInput.value = '';
       renderResults('');
     });
   });
+  updateSearchShadow();
 }
 
-searchInput.addEventListener('input', () => renderResults(searchInput.value));
-searchBtn.addEventListener('click', () => renderResults(searchInput.value));
-searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') renderResults(searchInput.value); });
+searchInput.addEventListener('input', () => {
+  if (searchInput.value) {
+    sessionStorage.setItem('searchQuery', searchInput.value);
+  } else {
+    sessionStorage.removeItem('searchQuery');
+  }
+  renderResults(searchInput.value);
+});
+searchBtn.addEventListener('click', () => {
+  sessionStorage.setItem('searchQuery', searchInput.value);
+  renderResults(searchInput.value);
+});
+searchInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    sessionStorage.setItem('searchQuery', searchInput.value);
+    renderResults(searchInput.value);
+  }
+});
