@@ -60,7 +60,6 @@ document.querySelectorAll('#menuDropdown a[data-target]').forEach(a => {
     e.preventDefault();
     const target = a.getAttribute('data-target');
     showSection(target);
-    // close menu
     menuDropdown.classList.remove('show');
     menuBtn.setAttribute('aria-expanded','false');
     menuBtn.classList.remove('open');
@@ -71,3 +70,418 @@ document.querySelectorAll('#menuDropdown a[data-target]').forEach(a => {
 document.addEventListener('DOMContentLoaded', function(){
   showSection('despre');
 });
+
+// ── Slogan Typewriter Animation ─────────────────────────────
+const slogans = [
+  "INCLUDE-I PE TOȚI!",
+  "INFORMEAZĂ-I PE TOȚI!",
+  "INVESTEȘTE ÎN TOȚI!"
+];
+
+const lines = document.querySelectorAll(".slogan");
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+let translationDetected = false;
+
+const observer = new MutationObserver(() => {
+  const translated = Array.from(lines).some((line, i) => {
+    const content = line.textContent.trim();
+    return content.length > 0 && content !== slogans[i];
+  });
+  if (translated) {
+    translationDetected = true;
+    observer.disconnect();
+    lines.forEach((line, i) => { line.textContent = slogans[i]; });
+  }
+});
+
+lines.forEach(line => {
+  observer.observe(line, { subtree: true, childList: true, characterData: true });
+});
+
+const rand = (min, max) => Math.random() * (max - min) + min;
+const randInt = (min, max) => Math.floor(rand(min, max));
+
+const typeDelay = (char, i, text) => {
+  if ("!?.,:;".includes(char)) return rand(180, 280);
+  if (char === " ")            return rand(80, 140);
+  if (i === text.length - 1)  return rand(120, 200);
+  return rand(55, 130);
+};
+
+const deleteDelay = () => rand(35, 75);
+
+const shouldMakeMistake = () => Math.random() < 0.075;
+const WRONG_CHARS = "QWERTYUIOPASDFGHJKLZXCVBNM";
+const randomWrongChar = () => WRONG_CHARS[randInt(0, WRONG_CHARS.length)];
+
+const setLine = (line, text, withCursor = true) => {
+  const cursor = withCursor
+    ? '<span class="cursor"></span>'
+    : '<span class="cursor hidden-cursor"></span>';
+  observer.disconnect();
+  line.innerHTML = text + cursor;
+  setTimeout(() => {
+    if (!translationDetected) {
+      lines.forEach(l => observer.observe(l, { subtree: true, childList: true, characterData: true }));
+    }
+  }, 0);
+};
+
+const typeLine = async (line, text) => {
+  let typed = "";
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    if (char !== " " && !"!?.,:;".includes(char) && shouldMakeMistake()) {
+      typed += randomWrongChar();
+      setLine(line, typed);
+      await sleep(rand(80, 150));
+      await sleep(rand(120, 260));
+      typed = typed.slice(0, -1);
+      setLine(line, typed);
+      await sleep(rand(60, 110));
+    }
+    typed += char;
+    setLine(line, typed);
+    await sleep(typeDelay(char, i, text));
+  }
+  setLine(line, typed, false);
+};
+
+const deleteLine = async (line, text) => {
+  let remaining = text;
+  while (remaining.length > 0) {
+    const burst = Math.random() < 0.2 ? randInt(2, 4) : 1;
+    remaining = remaining.slice(0, Math.max(0, remaining.length - burst));
+    setLine(line, remaining);
+    await sleep(deleteDelay());
+  }
+  setLine(line, "", false);
+};
+
+(async function run() {
+  if (translationDetected) {
+    lines.forEach((line, i) => { line.textContent = slogans[i]; });
+    return;
+  }
+  while (true) {
+    for (let i = 0; i < slogans.length; i++) {
+      if (translationDetected) { lines.forEach((line, j) => { line.textContent = slogans[j]; }); return; }
+      await typeLine(lines[i], slogans[i]);
+      await sleep(rand(200, 380));
+    }
+    await sleep(rand(1600, 2200));
+    for (let i = slogans.length - 1; i >= 0; i--) {
+      if (translationDetected) { lines.forEach((line, j) => { line.textContent = slogans[j]; }); return; }
+      await sleep(rand(80, 180));
+      await deleteLine(lines[i], slogans[i]);
+    }
+    await sleep(rand(400, 650));
+  }
+})();
+
+// ── Search Engine ────────────────────────────────────────────
+// const searchIndex = [
+//   {
+//     title: "Mobilitate - Job Shadowing",
+//     description: "Bune practici în educația adulților și incluziune.",
+//     keywords: "job shadowing mobilitate educatie adulti incluziune",
+//     action: { type: "download", label: "Descarcă PDF", href: "mobilities/Mobilitate-Job-Shadowing.pdf" }
+//   },
+//   {
+//     title: "Mobilitate - Curs Portugalia",
+//     description: "Antreprenoriat social și soluții pentru problemele comunității.",
+//     keywords: "portugalia curs mobilitate antreprenoriat social comunitate",
+//     action: { type: "download", label: "Descarcă PDF", href: "mobilities/Mobilitate-Curs-Portugalia.pdf" }
+//   },
+//   {
+//     title: "Mobilitate - Curs Malta",
+//     description: "Mai multe informații vor fi disponibile în curând.",
+//     keywords: "malta curs mobilitate",
+//     action: null
+//   },
+//   {
+//     title: "Mobilitate - Vizita Pregătitoare",
+//     description: "Mai multe informații vor fi disponibile în curând.",
+//     keywords: "vizita pregatitoare mobilitate",
+//     action: null
+//   },
+//   {
+//     title: "Despre Proiect",
+//     description: "Proiectul Erasmus+ — contract 2024-2-RO01-KA122-ADU-000279325.",
+//     keywords: "erasmus proiect include informeaza investeste grant euro contract",
+//     action: { type: "section", label: "Vezi Proiect", target: "despre" }
+//   },
+//   {
+//     title: "Asociația Voltaire",
+//     description: "Asociație înființată în 2017, 4 profesori și 4 părinți ai elevilor Liceului Voltaire.",
+//     keywords: "asociatie parinti profesori voltaire liceu 2017 consiliu parteneriat",
+//     action: { type: "section", label: "Vezi Asociația", target: "asociatia" }
+//   },
+//   {
+//     title: "Prezentare PowerPoint Asociație",
+//     description: "Prezentare despre asociație în limba engleză.",
+//     keywords: "pptx powerpoint prezentare asociatie engleza download",
+//     action: { type: "download", label: "Descarcă PPTX", href: "resources/PPT-uri/prezentare_asociatia_parintilor_si_profesorilor_voltaire-limba_engleza.pptx" }
+//   },
+//   {
+//     title: "Contact",
+//     description: "euuvoltaire@gmail.com — Craiova, Dolj. Facebook: voltaire3i",
+//     keywords: "contact email facebook craiova dolj romania adresa",
+//     action: { type: "section", label: "Vezi Contact", target: "contact" }
+//   },
+//   {
+//     title: "Criterii de Selecție",
+//     description: "Membri activi, engleză minim A2, formatori de adulți, categorii dezavantajate.",
+//     keywords: "criterii selectie membri activi engleza A2 formatori adulti dezavantajate",
+//     action: { type: "section", label: "Vezi Criterii", target: "despre" }
+//   }
+// ];
+
+const searchIndex = [
+  // ── PROIECT CORE ─────────────────────────────
+  {
+    title: "Proiect Erasmus+",
+    description: "INCLUDE-I PE TOȚI! INFORMEAZĂ-I PE TOȚI! INVESTEȘTE ÎN TOȚI!",
+    keywords: "erasmus proiect include informeaza investeste adu ka122",
+    action: { type: "section", label: "Vezi Proiect", target: "despre" }
+  },
+  {
+    title: "Număr Contract",
+    description: "2024-2-RO01-KA122-ADU-000279325",
+    keywords: "contract numar identificare ka122 adu proiect",
+    action: { type: "section", label: "Vezi Proiect", target: "despre" }
+  },
+  {
+    title: "Perioada Proiectului",
+    description: "01.04.2025 - 30.09.2026",
+    keywords: "perioada durata calendar inceput sfarsit 2025 2026",
+    action: { type: "section", label: "Vezi Proiect", target: "despre" }
+  },
+  {
+    title: "Grant Erasmus+",
+    description: "18.432 EURO finanțare aprobată",
+    keywords: "grant buget finantare euro bani 18432 cost proiect",
+    action: { type: "section", label: "Vezi Proiect", target: "despre" }
+  },
+
+  // ── SCOP & OBIECTIVE ─────────────────────────
+  {
+    title: "Scopul Proiectului",
+    description: "Metode de motivare și automotivare",
+    keywords: "scop obiective motivare automotivare dezvoltare educatie",
+    action: { type: "section", label: "Vezi Scop", target: "despre" }
+  },
+  {
+    title: "Reducerea Diferențelor Sociale",
+    description: "Diminuarea decalajelor socio-profesionale",
+    keywords: "diferente sociale profesionale incluziune echitate",
+    action: { type: "section", label: "Vezi Scop", target: "despre" }
+  },
+
+  // ── CRITERII ─────────────────────────────────
+  {
+    title: "Criterii de Selecție",
+    description: "Condiții generale de participare",
+    keywords: "criterii selectie conditii participare membri",
+    action: { type: "section", label: "Vezi Criterii", target: "despre" }
+  },
+  {
+    title: "Nivel Engleză A2",
+    description: "Competență lingvistică minimă",
+    keywords: "engleza a2 limba engleza nivel limba",
+    action: { type: "section", label: "Vezi Criterii", target: "despre" }
+  },
+  {
+    title: "Membri Activii Asociației",
+    description: "Doar membri activi pot participa",
+    keywords: "membri activi asociatie participare eligibil",
+    action: { type: "section", label: "Vezi Criterii", target: "despre" }
+  },
+  {
+    title: "Formatori de Adulți",
+    description: "Cadre implicate în educația adulților",
+    keywords: "formatori adulti trainer educatie adulti",
+    action: { type: "section", label: "Vezi Criterii", target: "despre" }
+  },
+  {
+    title: "Categorii Dezavantajate",
+    description: "Incluziune socială și acces egal",
+    keywords: "dezavantajate incluziune social grup vulnerabil",
+    action: { type: "section", label: "Vezi Criterii", target: "despre" }
+  },
+
+  // ── MOBILITĂȚI ───────────────────────────────
+  {
+    title: "Mobilitate Job Shadowing",
+    description: "Bune practici în educația adulților",
+    keywords: "job shadowing mobilitate observare educatie adulti",
+    action: { type: "download", label: "Descarcă PDF", href: "mobilities/Mobilitate-Job-Shadowing.pdf" }
+  },
+  {
+    title: "Mobilitate Portugalia",
+    description: "Antreprenoriat social și comunitate",
+    keywords: "portugalia mobilitate antreprenoriat social comunitate curs",
+    action: { type: "download", label: "Descarcă PDF", href: "mobilities/Mobilitate-Curs-Portugalia.pdf" }
+  },
+  {
+    title: "Mobilitate Malta",
+    description: "În curând",
+    keywords: "malta mobilitate curs upcoming soon",
+    action: null
+  },
+  {
+    title: "Vizită Pregătitoare",
+    description: "Activitate pregătitoare proiect",
+    keywords: "vizita pregatitoare mobilitate pregatire",
+    action: null
+  },
+
+  // ── ASOCIAȚIE ────────────────────────────────
+  {
+    title: "Asociația Voltaire",
+    description: "Părinți și profesori Voltaire",
+    keywords: "asociatie voltaire liceu parinti profesori 2017",
+    action: { type: "section", label: "Vezi Asociația", target: "asociatia" }
+  },
+  {
+    title: "Cine Suntem",
+    description: "Istoric și structură",
+    keywords: "cine suntem istoric organizare membri",
+    action: { type: "section", label: "Vezi Asociația", target: "asociatia" }
+  },
+  {
+    title: "Parteneriate",
+    description: "Colaborări instituționale",
+    keywords: "parteneriate colaborare minister inspectorat scoli",
+    action: { type: "section", label: "Vezi Asociația", target: "asociatia" }
+  },
+  {
+    title: "Competențe Cheie UE",
+    description: "Dezvoltare conform UE",
+    keywords: "competente cheie ue european dezvoltare invatare",
+    action: { type: "section", label: "Vezi Asociația", target: "asociatia" }
+  },
+
+  // ── DOCUMENTE ────────────────────────────────
+  {
+    title: "Prezentare PowerPoint",
+    description: "Asociația Voltaire (EN)",
+    keywords: "pptx powerpoint prezentare download engleza",
+    action: { type: "download", label: "Descarcă PPTX", href: "resources/PPT-uri/prezentare_asociatia_parintilor_si_profesorilor_voltaire-limba_engleza.pptx" }
+  },
+
+  // ── CONTACT ──────────────────────────────────
+  {
+    title: "Contact Email",
+    description: "euuvoltaire@gmail.com",
+    keywords: "email contact mail gmail",
+    action: { type: "section", label: "Vezi Contact", target: "contact" }
+  },
+  {
+    title: "Facebook",
+    description: "voltaire3i",
+    keywords: "facebook social media pagina voltaire3i",
+    action: { type: "section", label: "Vezi Contact", target: "contact" }
+  },
+  {
+    title: "Locație",
+    description: "Craiova, Dolj, România",
+    keywords: "locatie adresa craiova dolj romania unde",
+    action: { type: "section", label: "Vezi Contact", target: "contact" }
+  }
+];
+
+function normalizeStr(str) {
+  return str.toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9 ]/g, " ");
+}
+
+function searchQuery(query) {
+  const q = normalizeStr(query.trim());
+
+  // No search text = show everything
+  if (!q) return searchIndex;
+
+  const terms = q.split(/\s+/).filter(Boolean);
+
+  return searchIndex
+    .map(item => {
+      const haystack = normalizeStr(`${item.title} ${item.description} ${item.keywords}`);
+      const score = terms.reduce((acc, term) => {
+        if (haystack.includes(term)) acc++;
+        if (normalizeStr(item.title).includes(term)) acc++;
+        return acc;
+      }, 0);
+      return { item, score };
+    })
+    .filter(r => r.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .map(r => r.item);
+}
+
+const searchInput = document.getElementById('project-search');
+const searchBtn = document.querySelector('.search-btn');
+const resultsBox = document.getElementById('search-results');
+
+function renderResults(query) {
+  const cleanedQuery = query.trim();
+  const results = searchQuery(query);
+
+  if (!cleanedQuery) {
+    resultsBox.innerHTML = results.map(item => `
+      <div class="search-result-item">
+        <div class="search-result-text">
+          <strong>${item.title}</strong>
+          <span>${item.description}</span>
+        </div>
+        ${item.action
+          ? item.action.type === 'download'
+            ? `<a class="btn search-result-btn" href="${item.action.href}" download>${item.action.label}</a>`
+            : `<button class="btn search-result-btn" data-section="${item.action.target}">${item.action.label}</button>`
+          : `<span class="btn btn-muted search-result-btn" style="opacity:0.5;cursor:default">În curând</span>`
+        }
+      </div>
+    `).join('');
+
+    resultsBox.classList.add('show');
+  } else if (results.length === 0) {
+    resultsBox.innerHTML = `<p class="search-no-results">Niciun rezultat pentru „${query}”</p>`;
+    resultsBox.classList.add('show');
+  } else {
+    resultsBox.innerHTML = results.map(item => `
+      <div class="search-result-item">
+        <div class="search-result-text">
+          <strong>${item.title}</strong>
+          <span>${item.description}</span>
+        </div>
+        ${item.action
+          ? item.action.type === 'download'
+            ? `<a class="btn search-result-btn" href="${item.action.href}" download>${item.action.label}</a>`
+            : `<button class="btn search-result-btn" data-section="${item.action.target}">${item.action.label}</button>`
+          : `<span class="btn btn-muted search-result-btn" style="opacity:0.5;cursor:default">În curând</span>`
+        }
+      </div>
+    `).join('');
+
+    resultsBox.classList.add('show');
+  }
+
+  resultsBox.querySelectorAll('button[data-section]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      showSection(btn.getAttribute('data-section'));
+      searchInput.value = '';
+      renderResults('');
+    });
+  });
+}
+
+searchInput.addEventListener('input', () => renderResults(searchInput.value));
+searchBtn.addEventListener('click', () => renderResults(searchInput.value));
+searchInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') renderResults(searchInput.value);
+});
+
+// Show all options on page load
+renderResults('');
