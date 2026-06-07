@@ -628,7 +628,7 @@ hr {
 
 .pptx-btn:hover {
   background: var(--sky);
-  color: var(--white);
+  color: var(--white) !important;
   border-color: var(--sky);
   box-shadow: 0 4px 16px rgba(74,159,212,0.30);
 }
