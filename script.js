@@ -132,6 +132,19 @@ function buildSkeleton(section) {
         <div class="skeleton-block" style="height:16px;width:92%"></div>
         <div class="skeleton-block" style="height:48px;width:260px;margin-top:12px"></div>
       </div>`;
+  } else if (id === 'mai-multe') {
+    overlay.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:14px;width:100%">
+        <div class="skeleton-block" style="height:32px;width:40%"></div>
+        <div style="display:flex;justify-content:center;width:100%;padding:20px 0;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-md)">
+          <div class="skeleton-block" style="width:min(100%,338px);height:600px;border-radius:var(--radius-lg)"></div>
+        </div>
+        <div class="skeleton-block" style="height:1px;width:100%;margin:12px 0;border-radius:0"></div>
+        <div style="display:flex;align-items:center;gap:12px;width:100%;padding:22px 26px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm)">
+          <div class="skeleton-block" style="height:24px;width:40%;max-width:400px"></div>
+          <div class="skeleton-block" style="height:43px;width:138px;flex-shrink:0;margin-left:12px;border-radius:var(--radius-md)"></div>
+        </div>
+      </div>`;
   } else if (id === 'contact') {
     overlay.innerHTML = `
       <div style="display:flex;flex-direction:column;gap:14px">
@@ -419,6 +432,8 @@ const searchIndex = [
   { title:"Competențe Cheie UE", description:"Dezvoltare conform UE", keywords:"competente cheie ue european dezvoltare invatare", action:{ type:"section", label:"Vezi Asociația", target:"asociatia" } },
   // ── DOCUMENTE ────────────────────────────────
   { title:"Prezentare PowerPoint", description:"Asociația Voltaire (EN)", keywords:"pptx powerpoint prezentare download engleza", action:{ type:"download", label:"Descarcă PPTX", href:"resources/PPT-uri/prezentare_asociatia_parintilor_si_profesorilor_voltaire-limba_engleza.pptx" } },
+  { title:"Video din Diseminari", description:"Videoclip din 10 noiembrie 2026", keywords:"diseminari video videoclip whatsapp 2026 noiembrie", action:{ type:"section", label:"Vezi Video", target:"mai-multe" } },
+  { title:"Prezentare curs AI", description:"Prezentare PowerPoint despre inteligența artificială", keywords:"diseminari pptx powerpoint prezentare curs inteligenta artificiala ai download", action:{ type:"download", label:"Descarcă PPTX", href:"resources/Diseminari%20content/Prezentare_curs_AI_Voltaire.pptx" } },
   // ── CONTACT ──────────────────────────────────
   { title:"Contact Email", description:"euuvoltaire@gmail.com", keywords:"email contact mail gmail", action:{ type:"section", label:"Vezi Contact", target:"contact" } },
   { title:"Facebook", description:"voltaire3i", keywords:"facebook social media pagina voltaire3i", action:{ type:"section", label:"Vezi Contact", target:"contact" } },
