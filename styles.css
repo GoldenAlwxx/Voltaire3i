@@ -16,7 +16,8 @@ h1,h2,h3,h4,h5,h6{font-family:var(--font-heading);font-weight:700;line-height:1.
 .container{max-width:1180px;margin:0 auto;padding:0 28px;}
 
 /* ── Header ────────────────────────────────── */
-.site-header{position:sticky;top:0;z-index:100;background:rgba(247,249,252,0.90);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--border-2);box-shadow:var(--shadow-sm);}
+.site-header{position:sticky;top:0;z-index:100;background:rgba(247,249,252,0.90);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--border-2);box-shadow:var(--shadow-sm);transition:transform 220ms ease;}
+.site-header.header-hidden{transform:translateY(-100%);}
 .site-header .container{display:flex;align-items:center;justify-content:space-between;padding-top:18px;padding-bottom:18px;}
 .brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--azure-deep);}
 .brand-logos{display:flex;align-items:center;gap:12px;}
@@ -167,6 +168,16 @@ hr{border:none;border-top:1px solid var(--border);margin:28px 0;}
 .diseminari-download{width:100%;margin-top:0;}
 .diseminari-download .pptx-btn{flex-shrink:0;white-space:nowrap;}
 
+/* ── Gallery ───────────────────────────────── */
+.gallery-groups{display:flex;flex-direction:column;border-top:1px solid var(--border);padding-top:22px;}
+.gallery-group{position:relative;background:rgba(255,255,255,0.5);border:1px solid var(--border-2);border-radius:var(--radius-md);padding:8px;}
+.gallery-group + .gallery-group{margin-top:22px;}
+.gallery-group + .gallery-group::before{content:'';position:absolute;top:-12px;left:0;right:0;border-top:1px solid var(--border);}
+.gallery-group h3{font-size:clamp(1.15rem,1.8vw,1.5rem);color:var(--azure-deep);margin:0 0 16px;padding-left:8px;}
+.gallery-grid{columns:4;column-gap:8px;}
+.gallery-item{break-inside:avoid;overflow:hidden;margin:0 0 8px;background:var(--white);border:1px solid var(--border);box-shadow:var(--shadow-sm);}
+.gallery-item img{display:block;width:100%;height:auto;}
+
 /* ── Footer ────────────────────────────────── */
 .site-footer{border-top:1px solid var(--border);padding:22px 0;background:var(--white);margin-top:40px;}
 .site-footer .container{display:flex;justify-content:space-between;align-items:center;color:var(--text-muted);font-size:0.85rem;}
@@ -181,7 +192,7 @@ hr{border:none;border-top:1px solid var(--border);margin:28px 0;}
 
 /* ── Utilities ─────────────────────────────── */
 .muted{color:var(--text-muted);}
-#mobilities,#asociatia,#mai-multe,#contact{border-top:1px solid var(--border);margin-top:8px;}
+#mobilities,#asociatia,#mai-multe,#galerie,#contact{border-top:1px solid var(--border);margin-top:8px;}
 
 /* ── Responsive ────────────────────────────── */
 @media (max-width:1100px){
@@ -190,6 +201,7 @@ hr{border:none;border-top:1px solid var(--border);margin:28px 0;}
 }
 @media (max-width:900px){
   .diseminari-layout{grid-template-columns:1fr;}
+  .gallery-grid{columns:3;}
   .menu-btn { min-width: 46px; min-height: 46px; padding: 12px; }
   .menu-icon { width: 22px; height: 18px; }
   .menu-btn.open .bar1 { transform: translateY(9px) rotate(45deg); }
@@ -266,6 +278,7 @@ hr{border:none;border-top:1px solid var(--border);margin:28px 0;}
   .site-footer .container { flex-direction: column; gap: 10px; text-align: center; }
 }
 @media (max-width:600px){
+  .gallery-grid{columns:2;}
   .search-panel{padding:14px;border-radius:var(--radius-md);}
   .search-result-item{flex-direction:column;align-items:flex-start;gap:8px;}
   .search-result-btn{width:100%;text-align:center;justify-content:center;}

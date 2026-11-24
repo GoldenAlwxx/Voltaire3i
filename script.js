@@ -12,6 +12,138 @@ function showToast(msg, duration = 2800) {
   toastTimer = setTimeout(() => toast.classList.remove('show'), duration);
 }
 
+// ── Gallery ─────────────────────────────────────────────────
+const numberedWhatsAppPhotos = (timestamp, lastNumber) => [
+  `${timestamp}.jpeg`,
+  ...Array.from({ length: lastNumber }, (_, index) => `${timestamp} (${index + 1}).jpeg`)
+];
+
+function gallerySectionId(title) {
+  return `gallery-${title.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')}`;
+}
+
+const gallerySections = [
+  {
+    title: 'Curs Porto',
+    folder: 'Curs Porto',
+    searchKeywords: 'mobilitate mobilitati mobility mobilities',
+    photos: numberedWhatsAppPhotos('WhatsApp Image 2026-11-24 at 7.05.13 PM', 6)
+  },
+  {
+    title: 'Job Shadowing',
+    folder: 'Job Shadowing',
+    searchKeywords: 'mobilitate mobilitati mobility mobilities',
+    photos: [
+      ...numberedWhatsAppPhotos('WhatsApp Image 2026-11-24 at 7.07.19 PM', 36),
+      ...numberedWhatsAppPhotos('WhatsApp Image 2026-11-24 at 7.07.20 PM', 5)
+    ]
+  },
+  {
+    title: 'Vizită Pregătitoare',
+    folder: 'Vizita Pregatitoare',
+    searchKeywords: 'mobilitate mobilitati mobility mobilities',
+    photos: [
+      ...numberedWhatsAppPhotos('WhatsApp Image 2026-11-24 at 7.03.44 PM', 2),
+      ...numberedWhatsAppPhotos('WhatsApp Image 2026-11-24 at 7.03.45 PM', 4)
+    ]
+  },
+  {
+    title: 'Activitate Cruset Gorj',
+    folder: 'Diseminari/Activitate Cruset Gorj',
+    searchKeywords: 'diseminare diseminari dissemination',
+    photos: [
+      ...numberedWhatsAppPhotos('WhatsApp Image 2026-11-24 at 7.09.38 PM', 1),
+      ...numberedWhatsAppPhotos('WhatsApp Image 2026-11-24 at 7.09.39 PM', 4)
+    ]
+  },
+  {
+    title: 'Erasmus Days 2025',
+    folder: 'Diseminari/Erasmus Days 2025',
+    searchKeywords: 'diseminare diseminari dissemination',
+    photos: numberedWhatsAppPhotos('WhatsApp Image 2026-11-24 at 7.11.23 PM', 8)
+  },
+  {
+    title: 'Erasmus Days 2026',
+    folder: 'Diseminari/Erasmus Days 2026',
+    searchKeywords: 'diseminare diseminari dissemination',
+    photos: [
+      ...numberedWhatsAppPhotos('WhatsApp Image 2026-11-24 at 7.12.22 PM', 14),
+      ...numberedWhatsAppPhotos('WhatsApp Image 2026-11-24 at 7.12.23 PM', 4)
+    ]
+  },
+  {
+    title: 'Ghercesti',
+    folder: 'Diseminari/Ghercesti',
+    searchKeywords: 'diseminare diseminari dissemination',
+    photos: [
+      ...numberedWhatsAppPhotos('WhatsApp Image 2026-11-24 at 7.20.59 PM', 0),
+      ...numberedWhatsAppPhotos('WhatsApp Image 2026-11-24 at 7.21.00 PM', 2)
+    ]
+  },
+  {
+    title: 'Masa rotunda nationala 12 martie 2026',
+    folder: 'Diseminari/Masa rotunda nationala 12 martie 2026',
+    searchKeywords: 'diseminare diseminari dissemination',
+    photos: [
+      ...numberedWhatsAppPhotos('WhatsApp Image 2026-11-24 at 7.14.29 PM', 5),
+      ...numberedWhatsAppPhotos('WhatsApp Image 2026-11-24 at 7.14.30 PM', 0)
+    ]
+  },
+  {
+    title: 'Workshop iunie 2026',
+    folder: 'Diseminari/Workshop iunie 2026',
+    searchKeywords: 'diseminare diseminari dissemination',
+    photos: [
+      ...numberedWhatsAppPhotos('WhatsApp Image 2026-11-24 at 7.13.25 PM', 3),
+      ...numberedWhatsAppPhotos('WhatsApp Image 2026-11-24 at 7.13.26 PM', 1)
+    ]
+  },
+  {
+    title: 'Workshop membrii Asociatiei',
+    folder: 'Diseminari/Workshop membrii Asociatiei',
+    searchKeywords: 'diseminare diseminari dissemination',
+    photos: [
+      ...numberedWhatsAppPhotos('WhatsApp Image 2026-11-24 at 7.10.33 PM', 0),
+      ...numberedWhatsAppPhotos('WhatsApp Image 2026-11-24 at 7.10.34 PM', 7)
+    ]
+  }
+];
+
+const galleryContainer = document.getElementById('gallery-groups');
+if (galleryContainer) {
+  gallerySections.forEach(({ title, folder, photos }) => {
+    const group = document.createElement('section');
+    group.className = 'gallery-group';
+    group.id = gallerySectionId(title);
+
+    const heading = document.createElement('h3');
+    heading.textContent = title;
+    group.appendChild(heading);
+
+    const grid = document.createElement('div');
+    grid.className = 'gallery-grid';
+    photos.forEach((photo, index) => {
+      const figure = document.createElement('figure');
+      figure.className = 'gallery-item';
+
+      const image = document.createElement('img');
+      const encodedFolder = folder.split('/').map(encodeURIComponent).join('/');
+      image.src = `Gallery/${encodedFolder}/${encodeURIComponent(photo)}`;
+      image.alt = `${title} – fotografie ${index + 1}`;
+      image.loading = 'lazy';
+      image.decoding = 'async';
+      figure.appendChild(image);
+      grid.appendChild(figure);
+    });
+
+    group.appendChild(grid);
+    galleryContainer.appendChild(group);
+  });
+}
+
 // ── Anchor clicks + download toast ───────────────────────────
 document.addEventListener('click', function(e) {
   const a = e.target.closest('a');
@@ -41,6 +173,44 @@ document.addEventListener('click', function(e) {
 // Dropdown menu + show/hide sections logic
 const menuBtn = document.getElementById('menuBtn');
 const menuDropdown = document.getElementById('menuDropdown');
+const siteHeader = document.querySelector('.site-header');
+let lastHeaderScrollY = window.scrollY;
+let headerScrollDirection = 0;
+let headerScrollDistance = 0;
+let headerScrollScheduled = false;
+
+window.addEventListener('scroll', function() {
+  if (headerScrollScheduled) return;
+  headerScrollScheduled = true;
+
+  window.requestAnimationFrame(() => {
+    headerScrollScheduled = false;
+    const currentScrollY = window.scrollY;
+    const delta = currentScrollY - lastHeaderScrollY;
+
+    if (currentScrollY <= (siteHeader?.offsetHeight || 0) || menuDropdown?.classList.contains('show')) {
+      siteHeader?.classList.remove('header-hidden');
+      headerScrollDirection = 0;
+      headerScrollDistance = 0;
+    } else if (delta !== 0) {
+      const direction = Math.sign(delta);
+      if (direction !== headerScrollDirection) {
+        headerScrollDirection = direction;
+        headerScrollDistance = 0;
+      }
+
+      headerScrollDistance += Math.abs(delta);
+      if (direction > 0 && headerScrollDistance >= 8) {
+        siteHeader?.classList.add('header-hidden');
+      } else if (direction < 0 && headerScrollDistance >= 4) {
+        siteHeader?.classList.remove('header-hidden');
+      }
+    }
+
+    lastHeaderScrollY = currentScrollY;
+  });
+}, { passive: true });
+
 function toggleMenu(){
   const expanded = menuBtn.getAttribute('aria-expanded') === 'true';
   menuBtn.setAttribute('aria-expanded', String(!expanded));
@@ -149,6 +319,20 @@ function buildSkeleton(section) {
           <div class="skeleton-block" style="height:43px;width:138px;flex-shrink:0;margin-left:12px;border-radius:var(--radius-md)"></div>
         </div>
       </div>`;
+  } else if (id === 'galerie') {
+    const gallery = document.createElement('div');
+    gallery.style.cssText = 'display:flex;flex-direction:column;gap:36px;width:100%';
+    for (let groupIndex = 0; groupIndex < 3; groupIndex++) {
+      const group = document.createElement('div');
+      group.style.cssText = 'display:flex;flex-direction:column;gap:16px';
+      group.innerHTML = `
+        <div class="skeleton-block" style="height:24px;width:220px"></div>
+        <div class="gallery-grid">
+          ${Array.from({ length: 6 }, () => '<div class="skeleton-block" style="aspect-ratio:4/3;border-radius:var(--radius-lg)"></div>').join('')}
+        </div>`;
+      gallery.appendChild(group);
+    }
+    overlay.appendChild(gallery);
   } else if (id === 'contact') {
     overlay.innerHTML = `
       <div style="display:flex;flex-direction:column;gap:14px">
@@ -429,6 +613,12 @@ const searchIndex = [
   { title:"Mobilitate Portugalia", description:"Antreprenoriat social și comunitate", keywords:"portugalia mobilitate antreprenoriat social comunitate curs", action:{ type:"download", label:"Descarcă PDF", href:"mobilities/Mobilitate-Curs-Portugalia.pdf" } },
   { title:"Mobilitate Malta", description:"Învățare non-formală în medii digitale și hibride", keywords:"malta mobilitate curs formare invatare non-formala digital hibrid facilitare evaluare powerpoint pptx prezentare download", action:{ type:"download", label:"Descarcă PPTX", href:"mobilities/Mobilitate-Curs-Malta.pptx" } },
   { title:"Vizită Pregătitoare", description:"Planificarea mobilității, logistica și participarea incluzivă la Vizela", keywords:"vizita pregatitoare mobilitate pregatire planificare logistica vizela incluziune prezentare powerpoint pptx download", action:{ type:"download", label:"Descarcă PPTX", href:"mobilities/Mobilitate-Vizita-Pregatitoare.pptx" } },
+  ...gallerySections.map(({ title, searchKeywords }) => ({
+    title,
+    description: `Fotografii din ${title}`,
+    keywords: `${searchKeywords} poze photos photo fotografie fotografii imagini galerie`,
+    action: { type:"section", label:"Vezi pozele", target:"galerie", anchor:gallerySectionId(title) }
+  })),
   // ── ASOCIAȚIE ────────────────────────────────
   { title:"Asociația Voltaire", description:"Părinți și profesori Voltaire", keywords:"asociatie voltaire liceu parinti profesori 2017", action:{ type:"section", label:"Vezi Asociația", target:"asociatia" } },
   { title:"Cine Suntem", description:"Istoric și structură", keywords:"cine suntem istoric organizare membri", action:{ type:"section", label:"Vezi Asociația", target:"asociatia", anchor:"anchor-cine-suntem" } },
