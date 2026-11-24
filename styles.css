@@ -127,6 +127,9 @@ hr{border:none;border-top:1px solid var(--border);margin:28px 0;}
 .card-body{padding:20px 22px;display:flex;flex-direction:column;gap:10px;flex:1;}
 .card-body .btn{height:fit-content !important;display:flex;align-items:center;justify-content:center;}
 .card h4{font-size:1.05rem;color:var(--azure-deep);margin:0;}
+.mobility-title-link{color:inherit;text-decoration:none;}
+.mobility-title-link:hover,.mobility-title-link:focus-visible{text-decoration:underline;text-underline-offset:0.18em;}
+.external-link-indicator{color:var(--text-muted);font-size:0.8em;margin-left:0.3em;vertical-align:0.05em;}
 .card .muted{font-size:0.88rem;line-height:1.6;flex:1;}
 
 /* ── Buttons ───────────────────────────────── */
@@ -160,8 +163,8 @@ hr{border:none;border-top:1px solid var(--border);margin:28px 0;}
 .diseminari-video-card{width:100%;padding:20px 0;}
 .diseminari-video{display:block;width:min(100%,338px);max-height:600px;aspect-ratio:9 / 16;object-fit:contain;margin:0 auto;background:var(--cool-white-2);}
 .diseminari-divider{width:100%;margin:12px 0;}
-.diseminari-pptx{width:100%;margin-top:0;}
-.diseminari-pptx .pptx-btn{flex-shrink:0;white-space:nowrap;}
+.diseminari-download{width:100%;margin-top:0;}
+.diseminari-download .pptx-btn{flex-shrink:0;white-space:nowrap;}
 
 /* ── Footer ────────────────────────────────── */
 .site-footer{border-top:1px solid var(--border);padding:22px 0;background:var(--white);margin-top:40px;}

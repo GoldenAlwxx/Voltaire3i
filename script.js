@@ -144,6 +144,10 @@ function buildSkeleton(section) {
           <div class="skeleton-block" style="height:24px;width:40%;max-width:400px"></div>
           <div class="skeleton-block" style="height:43px;width:138px;flex-shrink:0;margin-left:12px;border-radius:var(--radius-md)"></div>
         </div>
+        <div style="display:flex;align-items:center;gap:12px;width:100%;padding:22px 26px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm)">
+          <div class="skeleton-block" style="height:24px;width:40%;max-width:400px"></div>
+          <div class="skeleton-block" style="height:43px;width:138px;flex-shrink:0;margin-left:12px;border-radius:var(--radius-md)"></div>
+        </div>
       </div>`;
   } else if (id === 'contact') {
     overlay.innerHTML = `
@@ -423,7 +427,7 @@ const searchIndex = [
   // ── MOBILITĂȚI ───────────────────────────────
   { title:"Mobilitate Job Shadowing", description:"Bune practici în educația adulților", keywords:"job shadowing mobilitate observare educatie adulti", action:{ type:"download", label:"Descarcă PDF", href:"mobilities/Mobilitate-Job-Shadowing.pdf" } },
   { title:"Mobilitate Portugalia", description:"Antreprenoriat social și comunitate", keywords:"portugalia mobilitate antreprenoriat social comunitate curs", action:{ type:"download", label:"Descarcă PDF", href:"mobilities/Mobilitate-Curs-Portugalia.pdf" } },
-  { title:"Mobilitate Malta", description:"În curând", keywords:"malta mobilitate curs upcoming soon", action:null },
+  { title:"Mobilitate Malta", description:"Învățare non-formală în medii digitale și hibride", keywords:"malta mobilitate curs formare invatare non-formala digital hibrid facilitare evaluare powerpoint pptx prezentare download", action:{ type:"download", label:"Descarcă PPTX", href:"mobilities/Mobilitate-Curs-Malta.pptx" } },
   { title:"Vizită Pregătitoare", description:"Activitate pregătitoare proiect", keywords:"vizita pregatitoare mobilitate pregatire", action:null },
   // ── ASOCIAȚIE ────────────────────────────────
   { title:"Asociația Voltaire", description:"Părinți și profesori Voltaire", keywords:"asociatie voltaire liceu parinti profesori 2017", action:{ type:"section", label:"Vezi Asociația", target:"asociatia" } },
