@@ -124,6 +124,7 @@ hr{border:none;border-top:1px solid var(--border);margin:28px 0;}
 .card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;display:flex;flex-direction:column;transition:transform 200ms ease,box-shadow 200ms ease,border-color 200ms ease;}
 .card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:rgba(74,159,212,0.35);}
 .card-media{width:100%;height:170px;object-fit:cover;display:block;background:var(--cool-white-2);}
+.card-media-blurred{filter:blur(1.5px);transform:scale(1.02);}
 .card-body{padding:20px 22px;display:flex;flex-direction:column;gap:10px;flex:1;}
 .card-body .btn{height:fit-content !important;display:flex;align-items:center;justify-content:center;}
 .card h4{font-size:1.05rem;color:var(--azure-deep);margin:0;}
