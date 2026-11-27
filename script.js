@@ -84,12 +84,21 @@ const gallerySections = [
     ]
   },
   {
-    title: 'Masa rotunda nationala 12 martie 2026',
-    folder: 'Diseminari/Masa rotunda nationala 12 martie 2026',
+    title: 'Simpozion International "NOI ABORDĂRI EDUCAȚIONALE PRIN PROIECTELE ERASMUS", 10 februarie 2026',
+    folder: 'Diseminari/Simpozion International NOI ABORDĂRI EDUCAȚIONALE PRIN PROIECTELE ERASMUS 10 februarie 2026',
     searchKeywords: 'diseminare diseminari dissemination',
     photos: [
       ...numberedWhatsAppPhotos('WhatsApp Image 2026-11-24 at 7.14.29 PM', 5),
       ...numberedWhatsAppPhotos('WhatsApp Image 2026-11-24 at 7.14.30 PM', 0)
+    ]
+  },
+  {
+    title: 'Masa rotunda Nationala Management Politici si Strategii Educationale Europene 12 martie 2026',
+    folder: 'Diseminari/Masa rotunda Nationala Management Politici si Strategii Educationale Europene 12 martie 2026',
+    searchKeywords: 'diseminare diseminari dissemination',
+    photos: [
+      ...numberedWhatsAppPhotos('WhatsApp Image 2026-11-26 at 10.47.40 AM', 3),
+      ...numberedWhatsAppPhotos('WhatsApp Image 2026-11-26 at 10.47.41 AM', 3)
     ]
   },
   {
