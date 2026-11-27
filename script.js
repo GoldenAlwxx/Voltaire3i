@@ -138,13 +138,20 @@ if (galleryContainer) {
       const figure = document.createElement('figure');
       figure.className = 'gallery-item';
 
+      const photoButton = document.createElement('button');
+      photoButton.className = 'gallery-photo-button';
+      photoButton.type = 'button';
+      photoButton.setAttribute('aria-label', `Mărește fotografia ${index + 1} din ${title}`);
+      photoButton.dataset.galleryIndex = String(document.querySelectorAll('.gallery-photo-button').length);
+
       const image = document.createElement('img');
       const encodedFolder = folder.split('/').map(encodeURIComponent).join('/');
       image.src = `Gallery/${encodedFolder}/${encodeURIComponent(photo)}`;
       image.alt = `${title} – fotografie ${index + 1}`;
       image.loading = 'lazy';
       image.decoding = 'async';
-      figure.appendChild(image);
+      photoButton.appendChild(image);
+      figure.appendChild(photoButton);
       grid.appendChild(figure);
     });
 
@@ -152,6 +159,77 @@ if (galleryContainer) {
     galleryContainer.appendChild(group);
   });
 }
+
+// ── Gallery lightbox ─────────────────────────────────────────
+const galleryLightbox = document.getElementById('gallery-lightbox');
+const lightboxImage = document.getElementById('gallery-lightbox-image');
+const lightboxCaption = document.getElementById('gallery-lightbox-caption');
+const lightboxCounter = document.getElementById('gallery-lightbox-counter');
+const galleryPhotoButtons = Array.from(document.querySelectorAll('.gallery-photo-button'));
+let currentGalleryIndex = -1;
+let previousBodyOverflow = '';
+
+function updateGalleryLightbox() {
+  const photoButton = galleryPhotoButtons[currentGalleryIndex];
+  if (!photoButton) return;
+
+  const image = photoButton.querySelector('img');
+  const groupTitle = photoButton.closest('.gallery-group').querySelector('h3').textContent;
+  lightboxImage.src = image.currentSrc || image.src;
+  lightboxImage.alt = image.alt;
+  lightboxCaption.textContent = image.alt;
+  lightboxCounter.textContent = `${currentGalleryIndex + 1} / ${galleryPhotoButtons.length}`;
+  galleryLightbox.setAttribute('aria-label', `${groupTitle}, fotografie ${currentGalleryIndex + 1} din ${galleryPhotoButtons.length}`);
+}
+
+function openGalleryLightbox(index) {
+  if (!galleryLightbox || index < 0 || index >= galleryPhotoButtons.length) return;
+
+  currentGalleryIndex = index;
+  updateGalleryLightbox();
+  previousBodyOverflow = document.body.style.overflow;
+  document.body.style.overflow = 'hidden';
+  galleryLightbox.showModal();
+}
+
+function closeGalleryLightbox() {
+  if (galleryLightbox?.open) galleryLightbox.close();
+}
+
+function cycleGalleryLightbox(direction) {
+  currentGalleryIndex = (currentGalleryIndex + direction + galleryPhotoButtons.length) % galleryPhotoButtons.length;
+  updateGalleryLightbox();
+}
+
+galleryContainer?.addEventListener('click', event => {
+  const photoButton = event.target.closest('.gallery-photo-button');
+  if (!photoButton) return;
+  openGalleryLightbox(Number(photoButton.dataset.galleryIndex));
+});
+
+galleryLightbox?.querySelector('[data-lightbox-close]').addEventListener('click', closeGalleryLightbox);
+galleryLightbox?.querySelector('[data-lightbox-previous]').addEventListener('click', () => cycleGalleryLightbox(-1));
+galleryLightbox?.querySelector('[data-lightbox-next]').addEventListener('click', () => cycleGalleryLightbox(1));
+galleryLightbox?.addEventListener('click', event => {
+  if (event.target === galleryLightbox) closeGalleryLightbox();
+});
+galleryLightbox?.addEventListener('close', () => {
+  document.body.style.overflow = previousBodyOverflow;
+  currentGalleryIndex = -1;
+});
+document.addEventListener('keydown', event => {
+  if (!galleryLightbox?.open) return;
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    closeGalleryLightbox();
+  } else if (event.key === 'ArrowLeft') {
+    event.preventDefault();
+    cycleGalleryLightbox(-1);
+  } else if (event.key === 'ArrowRight') {
+    event.preventDefault();
+    cycleGalleryLightbox(1);
+  }
+});
 
 // ── Anchor clicks + download toast ───────────────────────────
 document.addEventListener('click', function(e) {

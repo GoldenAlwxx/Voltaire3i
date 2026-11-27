@@ -226,6 +226,21 @@
 			</div>
 		</footer>
 
+		<dialog id="gallery-lightbox" class="gallery-lightbox" aria-label="Vizualizare fotografii">
+			<button class="gallery-lightbox-close" type="button" data-lightbox-close aria-label="Închide fotografia">×</button>
+			<div class="gallery-lightbox-content">
+				<img id="gallery-lightbox-image" alt="">
+				<div class="gallery-lightbox-navigation">
+					<button class="gallery-lightbox-nav" type="button" data-lightbox-previous aria-label="Fotografia anterioară">‹</button>
+					<button class="gallery-lightbox-nav" type="button" data-lightbox-next aria-label="Fotografia următoare">›</button>
+				</div>
+				<div class="gallery-lightbox-caption">
+					<span id="gallery-lightbox-caption"></span>
+					<span id="gallery-lightbox-counter"></span>
+				</div>
+			</div>
+		</dialog>
+
 		<script src="script.js"></script>
 	</body>
 </html>
